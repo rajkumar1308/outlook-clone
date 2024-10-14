@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import Emailbodyprev from './components/Emailbodyprev';
+import Pagination from './components/Pagination';
 import UserData from './components/userdata';
 
 const API = "https://flipkart-email-mock.now.sh/";
@@ -10,6 +11,15 @@ function App() {
   const [selectedCardId, setSelectedCardId] = useState("");
 
   const [selectedCardDetails, setSelectedCardDetails] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(5);
+
+
+  const lastPostIndex = currentPage * postsPerPage;
+  const firstPostIndex = lastPostIndex - postsPerPage;
+  const currentPosts = users.slice(firstPostIndex, lastPostIndex);
+
 
   useEffect(() => {
     const fetchUsers = async (url) => {
@@ -48,7 +58,13 @@ function App() {
         <div className="main-container">
           <div className={`email-list ${selectedCardId ? 'shrink' : ''}`}>
          
-            <UserData users={users} handleClickEvent={handleClickEvent}  />
+            <UserData users={currentPosts} handleClickEvent={handleClickEvent}  />
+
+            <Pagination totalPosts={users.length} 
+            postsPerPage={postsPerPage} 
+            setCurrentPage={setCurrentPage}
+             ></Pagination>
+
           </div>
           <div className={`email-body ${selectedCardId ? 'expanded' : ''}`}>
             
