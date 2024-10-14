@@ -7,30 +7,32 @@ const API = "https://flipkart-email-mock.now.sh/";
 
 function App() {
   const [users, setUsers] = useState([]);
-  const [selectedCardId, setSelectedCardId] = useState(null);
+  const [selectedCardId, setSelectedCardId] = useState("");
+
   const [selectedCardDetails, setSelectedCardDetails] = useState(null);
 
-  const fetchUsers = async (url) => {
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      if (data && data.list) {
-        setUsers(data.list);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   useEffect(() => {
+    const fetchUsers = async (url) => {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data.list) {
+          setUsers(data.list);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+  
     fetchUsers(API);
   }, []);
 
-  const handleCardClick = (id) => {
-    setSelectedCardId(id);
-    const selectedCard = users.find(item => item.id === id);
-    setSelectedCardDetails(selectedCard);
+
+  const handleClickEvent = (user) => {
+    setSelectedCardId(user.id)
+    setSelectedCardDetails(user)
   };
+
 
   return (
     <>
@@ -45,10 +47,12 @@ function App() {
         </div>
         <div className="main-container">
           <div className={`email-list ${selectedCardId ? 'shrink' : ''}`}>
-            <UserData users={users} onCardClick={handleCardClick} />
+         
+            <UserData users={users} handleClickEvent={handleClickEvent}  />
           </div>
           <div className={`email-body ${selectedCardId ? 'expanded' : ''}`}>
-            {selectedCardId && <Emailbodyprev details={selectedCardDetails} />}
+            
+            { <Emailbodyprev selectedCardDetails={selectedCardDetails} id={selectedCardId}/>}
           </div>
         </div>
       </section>
