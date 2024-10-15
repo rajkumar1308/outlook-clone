@@ -9,23 +9,17 @@ const API = "https://flipkart-email-mock.now.sh/";
 function App() {
   const [users, setUsers] = useState([]);
   const [selectedCardId, setSelectedCardId] = useState("");
+
   const [selectedCardDetails, setSelectedCardDetails] = useState(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(5);
-  const [filter, setFilter] = useState('all'); 
+
 
   const lastPostIndex = currentPage * postsPerPage;
   const firstPostIndex = lastPostIndex - postsPerPage;
-  
-  // Apply filter before slicing
-  const filteredUsers = users.filter(user => {
-    if (filter === 'unread') return !user.isRead;
-    if (filter === 'read') return user.isRead;
-    if (filter === 'favorites') return user.isFavorite;
-    return true; // for 'all'
-  });
+  const currentPosts = users.slice(firstPostIndex, lastPostIndex);
 
-  const currentPosts = filteredUsers.slice(firstPostIndex, lastPostIndex);
 
   useEffect(() => {
     const fetchUsers = async (url) => {
@@ -33,37 +27,22 @@ function App() {
         const res = await fetch(url);
         const data = await res.json();
         if (data && data.list) {
-          const initializedUsers = data.list.map(user => ({
-            ...user,
-            isRead: false, 
-            isFavorite: false 
-          }));
-          setUsers(initializedUsers);
+          setUsers(data.list);
         }
       } catch (e) {
         console.error(e);
       }
     };
-
+  
     fetchUsers(API);
   }, []);
 
+
   const handleClickEvent = (user) => {
-    setSelectedCardId(user.id);
-    setSelectedCardDetails(user);
-    // Mark as read when selected
-    if (!user.isRead) {
-      setUsers(prevUsers => 
-        prevUsers.map(u => u.id === user.id ? { ...u, isRead: true } : u)
-      );
-    }
+    setSelectedCardId(user.id)
+    setSelectedCardDetails(user)
   };
 
-  const toggleFavorite = (userId) => {
-    setUsers(prevUsers => 
-      prevUsers.map(u => u.id === userId ? { ...u, isFavorite: !u.isFavorite } : u)
-    );
-  };
 
   return (
     <>
@@ -74,25 +53,22 @@ function App() {
             <li onClick={() => setFilter('unread')}>Unread</li>
             <li onClick={() => setFilter('read')}>Read</li>
             <li onClick={() => setFilter('favorites')}>Favorites</li>
-            <li onClick={() => setFilter('all')}>All</li>
           </ul>
         </div>
         <div className="main-container">
           <div className={`email-list ${selectedCardId ? 'shrink' : ''}`}>
-            <UserData 
-              users={currentPosts} 
-              handleClickEvent={handleClickEvent} 
-              toggleFavorite={toggleFavorite} // Pass down toggle function
-            />
+         
+            <UserData users={currentPosts} handleClickEvent={handleClickEvent}  />
 
-            <Pagination 
-              totalPosts={filteredUsers.length} 
-              postsPerPage={postsPerPage} 
-              setCurrentPage={setCurrentPage} 
-            />
+            <Pagination totalPosts={users.length} 
+            postsPerPage={postsPerPage} 
+            setCurrentPage={setCurrentPage}
+             ></Pagination>
+
           </div>
           <div className={`email-body ${selectedCardId ? 'expanded' : ''}`}>
-            <Emailbodyprev selectedCardDetails={selectedCardDetails} id={selectedCardId} />
+            
+            { <Emailbodyprev selectedCardDetails={selectedCardDetails} id={selectedCardId}/>}
           </div>
         </div>
       </section>
