@@ -4,7 +4,7 @@ const UserData = ({ users , handleClickEvent }) => {
       <>
         {users.length > 0 ? (
           users.map((curUser) => {
-            const { id, from, date, subject, short_description } = curUser;
+            const { id, from, date, subject, short_description ,isFavorite} = curUser;
             return (
               <div
                 className="parent-body"
@@ -12,18 +12,23 @@ const UserData = ({ users , handleClickEvent }) => {
                 onClick={()=>{
                   handleClickEvent(curUser);
                 }}
+                
               >
-                <div className="left-head">
+                <div className="left-head" >
                   <div className="circle">
                     {from.name.charAt(0).toUpperCase()}
+                    
                   </div>
                 </div>
                 <div className="subject-body">
                   <p className="subject">From: {from.email}</p>
                   <p className="subject">Subject: {subject}</p>
                   <p className="short-description">{short_description}</p>
-                  <p className="date">Date: {new Date(date).toLocaleString()}</p>
+                  <p className="date">Date: {new Date(date).toLocaleString()}  {isFavorite && <span className="favorite-text">Favorite</span>}</p>
+                   
+                  
                 </div>
+               
               </div>
             );
           })
