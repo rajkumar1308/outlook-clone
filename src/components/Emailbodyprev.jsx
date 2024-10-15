@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-const Emailbodyprev = ({ id, selectedCardDetails }) => {
+const Emailbodyprev = ({ id, selectedCardDetails, toggleFavorite }) => {
   const [emailBody, setEmailBody] = useState("");
 
   useEffect(() => {
@@ -10,14 +10,13 @@ const Emailbodyprev = ({ id, selectedCardDetails }) => {
       const detailedResponse = await response.json();
       setEmailBody(detailedResponse?.body);
     };
-    
-    // Fetch email details only if `id` is available
+  
     if (id) {
       getEmailDetails();
     }
   }, [id]);
 
-  if (!selectedCardDetails) return null; // Return null if no details are passed
+  if (!selectedCardDetails) return null;
 
   const { subject, from, date } = selectedCardDetails;
 
@@ -28,10 +27,21 @@ const Emailbodyprev = ({ id, selectedCardDetails }) => {
       </div>
 
       <div className="email-body">
+
+        <div className='top-header'>
         <h2>{subject}</h2>
+
+<button onClick={(e) => { e.stopPropagation(); toggleFavorite(id); }}>
+    {id.isFavorite ? 'Unfavorite' : 'Favorite'}
+  </button>
+
+        </div>
+
         <p className="date">
           {new Date(date).toLocaleString()}
         </p>
+
+       
 
         <div>
           {emailBody ? (
